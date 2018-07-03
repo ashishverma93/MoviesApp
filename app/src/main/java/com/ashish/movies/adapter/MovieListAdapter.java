@@ -1,7 +1,11 @@
 package com.ashish.movies.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,6 +83,11 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MyVi
 
         void onBind(int position) {
             MoviesEntity moviesEntity = moviesEntities.get(position);
+
+            Bitmap placeholder = BitmapFactory.decodeResource(context.getResources(), R.color.colorAccent);
+            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), placeholder);
+            roundedBitmapDrawable.setCornerRadius(25F);
+
             if (moviesEntity.getPosterPath() != null) {
                 Glide.with(context)
                         .load(AppConstants.POSTER_BASE_PATH + moviesEntity.getPosterPath())

@@ -79,8 +79,6 @@ public class HomeActivity extends BaseActivity implements MovieListClickInterfac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initView();
-        initData();
         loadMovies();
         mSwipeMovies.setOnRefreshListener(this::loadMovies);
     }

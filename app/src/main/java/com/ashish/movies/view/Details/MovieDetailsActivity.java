@@ -133,8 +133,6 @@ public class MovieDetailsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initView();
-        initData();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             moviesEntity = (MoviesEntity) extras.getSerializable(MOVIE_DETAILS_PARCELABLE);
@@ -154,9 +152,10 @@ public class MovieDetailsActivity extends BaseActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void populateUi(MoviesEntity moviesEntity, String transitionName) {
+        startPostponedEnterTransition();
         Bitmap placeholder = BitmapFactory.decodeResource(getResources(), R.color.colorAccent);
         roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), placeholder);
-        roundedBitmapDrawable.setCornerRadius(20F);
+        roundedBitmapDrawable.setCornerRadius(25F);
         if (moviesEntity != null) {
             String bannerImagePath = AppConstants.BACKDROP_BASE_PATH + moviesEntity.getBackdropPath();
             Glide.with(MovieDetailsActivity.this)
