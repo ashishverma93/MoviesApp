@@ -133,7 +133,8 @@ public class MovieDetailsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        initView();
+        initData();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             moviesEntity = (MoviesEntity) extras.getSerializable(MOVIE_DETAILS_PARCELABLE);
@@ -222,7 +223,7 @@ public class MovieDetailsActivity extends BaseActivity {
                         .dontAnimate()
                         .dontTransform()
                         .onlyRetrieveFromCache(retrieveFromCache))
-                .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(20, 0)))
+                .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -277,6 +278,7 @@ public class MovieDetailsActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
         supportFinishAfterTransition();
     }
 }

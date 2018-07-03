@@ -79,6 +79,8 @@ public class HomeActivity extends BaseActivity implements MovieListClickInterfac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initView();
+        initData();
         loadMovies();
         mSwipeMovies.setOnRefreshListener(this::loadMovies);
     }
@@ -162,6 +164,8 @@ public class HomeActivity extends BaseActivity implements MovieListClickInterfac
         bundle.putSerializable(MOVIE_DETAILS_PARCELABLE, moviesEntity);
         bundle.putString(MOVIE_IMAGE_TRANSITION, transitionName);
         intent.putExtras(bundle);
+//        startActivity(intent);
+//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
