@@ -9,4 +9,7 @@
     <string name="txt_cast_members">Cast Members</string>
     <string name="txt_cast_member_image">Cast Member Image</string>
     <string name="txt_popular_movies">Popular Movies</string>
+    <string name="txt_top_rated_movie">Top Rated Movie</string>
+    <string name="txt_videos">Videos</string>
+    <string name="txt_images">Images</string>
 </resources>

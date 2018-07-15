@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -50,7 +51,7 @@ public class HomeActivity extends BaseActivity implements MovieListClickInterfac
     Toolbar mToolbar;
     @BindView(R.id.swipe_movies)
     SwipeRefreshLayout mSwipeMovies;
-    @BindView(R.id.rv_movies)
+    @BindView(R.id.rv_popular_movies)
     RecyclerView mRvMovies;
     @BindView(R.id.txv_empty_view)
     TextView mTxvEmpty;
@@ -69,7 +70,11 @@ public class HomeActivity extends BaseActivity implements MovieListClickInterfac
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(HomeActivityViewModel.class);
         mAdapter = new MovieListAdapter(this);
         int recyclerViewSpanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 2 : 4;
+
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, recyclerViewSpanCount);
+        mRvMovies.setLayoutManager(mLayoutManager);
+//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(HomeActivity.this);
+//        mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mRvMovies.setLayoutManager(mLayoutManager);
         mRvMovies.addItemDecoration(new GridSpacingItemDecoration(recyclerViewSpanCount, dpToPx(), true));
         mRvMovies.setItemAnimator(new DefaultItemAnimator());
@@ -160,12 +165,12 @@ public class HomeActivity extends BaseActivity implements MovieListClickInterfac
         Intent intent = new Intent(HomeActivity.this, MovieDetailsActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable(MOVIE_DETAILS_PARCELABLE, moviesEntity);
-        bundle.putString(MOVIE_IMAGE_TRANSITION, transitionName);
+//        bundle.putString(MOVIE_IMAGE_TRANSITION, transitionName);
         intent.putExtras(bundle);
-//        startActivity(intent);
-//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     HomeActivity.this,
                     mImageView,
@@ -174,6 +179,6 @@ public class HomeActivity extends BaseActivity implements MovieListClickInterfac
             startActivity(intent, options.toBundle());
         } else {
             startActivity(intent);
-        }
+        }*/
     }
 }

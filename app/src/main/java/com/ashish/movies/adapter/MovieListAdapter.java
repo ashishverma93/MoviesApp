@@ -109,7 +109,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.MyVi
         }
 
         @OnClick
-        void onClick(View view) {
+        void onClick() {
             MoviesEntity moviesEntity = moviesEntities.get(getAdapterPosition());
             String transitionName = AppConstants.MOVIE_ITEM + String.valueOf(getAdapterPosition());
             movieListClickInterface.onMovieItemClickListener(getAdapterPosition(), moviesEntity, mImageView, transitionName);

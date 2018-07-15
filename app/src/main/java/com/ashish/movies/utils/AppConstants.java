@@ -23,4 +23,7 @@ public class AppConstants {
     public static final String DF1 = "yyyy-MM-dd";
     public static final String DF2 = "MMM dd, yyyy";
     public static final String DF3 = "yyyy";
+
+    // Movie Video URL
+    public static final String YOUTUBE_THUMBNAIL = "https://img.youtube.com/vi/%s/mqdefault.jpg";
 }

@@ -3,11 +3,13 @@ package com.ashish.movies.view.Details;
 import android.annotation.TargetApi;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -28,10 +30,13 @@ import android.widget.TextView;
 import com.ashish.movies.R;
 import com.ashish.movies.adapter.MovieCastMemberAdapter;
 import com.ashish.movies.adapter.MovieGenreAdapter;
+import com.ashish.movies.adapter.MovieImageAdapter;
+import com.ashish.movies.adapter.MovieVideoAdapter;
 import com.ashish.movies.db.entity.MoviesEntity;
 import com.ashish.movies.utils.AppConstants;
 import com.ashish.movies.utils.AppUtils;
 import com.ashish.movies.utils.BaseActivity;
+import com.ashish.movies.view.interfaces.MovieVideoClickListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -52,7 +57,7 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 import static com.ashish.movies.utils.AppConstants.MOVIE_DETAILS_PARCELABLE;
 import static com.ashish.movies.utils.AppConstants.MOVIE_IMAGE_TRANSITION;
 
-public class MovieDetailsActivity extends BaseActivity {
+public class MovieDetailsActivity extends BaseActivity implements MovieVideoClickListener {
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
@@ -78,6 +83,14 @@ public class MovieDetailsActivity extends BaseActivity {
     RecyclerView mRvMovieCastMember;
     @BindView(R.id.lay_movie_cast)
     LinearLayout mLayMovieCast;
+    @BindView(R.id.rv_videos)
+    RecyclerView mRvMovieVideos;
+    @BindView(R.id.lay_movie_videos)
+    LinearLayout mLayMovieVideos;
+    @BindView(R.id.rv_movie_images)
+    RecyclerView mRvMovieImages;
+    @BindView(R.id.lay_movie_images)
+    LinearLayout mLayMovieImages;
     @BindView(android.R.id.content)
     View view;
 
@@ -86,12 +99,14 @@ public class MovieDetailsActivity extends BaseActivity {
     private RoundedBitmapDrawable roundedBitmapDrawable;
     private MovieCastMemberAdapter castMemberAdapter;
     private MovieGenreAdapter movieGenreAdapter;
+    private MovieVideoAdapter movieVideoAdapter;
+    private MovieImageAdapter movieImageAdapter;
 
 
     @Override
     public void initView() {
         setContentView(R.layout.activity_movie_details);
-        supportPostponeEnterTransition();
+//        supportPostponeEnterTransition();
         ButterKnife.bind(this);
     }
 
@@ -107,6 +122,7 @@ public class MovieDetailsActivity extends BaseActivity {
 
         castMemberAdapter = new MovieCastMemberAdapter(MovieDetailsActivity.this);
         movieGenreAdapter = new MovieGenreAdapter(MovieDetailsActivity.this);
+        movieVideoAdapter = new MovieVideoAdapter(MovieDetailsActivity.this);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -128,6 +144,21 @@ public class MovieDetailsActivity extends BaseActivity {
         flowLayoutManager.setAutoMeasureEnabled(true);
         mRvMovieGenre.setLayoutManager(flowLayoutManager);
         mRvMovieGenre.setAdapter(movieGenreAdapter);
+
+        LinearLayoutManager llmVideos = new LinearLayoutManager(this);
+        llmVideos.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mRvMovieVideos.setLayoutManager(llmVideos);
+        mRvMovieVideos.setAdapter(movieVideoAdapter);
+        mRvMovieVideos.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.left = dpToPx();
+                outRect.right = dpToPx() == state.getItemCount() - 1 ? dpToPx() : 0;
+                outRect.top = 0;
+                outRect.bottom = 0;
+            }
+        });
     }
 
     @Override
@@ -139,7 +170,7 @@ public class MovieDetailsActivity extends BaseActivity {
             transitionName = extras.getString(MOVIE_IMAGE_TRANSITION);
         }
 
-        supportPostponeEnterTransition();
+//        supportPostponeEnterTransition();
 
         populateUi(moviesEntity, transitionName);
 
@@ -172,7 +203,7 @@ public class MovieDetailsActivity extends BaseActivity {
 
         loadMoviePosterImage(true);
 
-        TransitionSet set = new TransitionSet();
+        /*TransitionSet set = new TransitionSet();
         set.addTransition(new ChangeImageTransform());
         set.addTransition(new ChangeBounds());
         set.addListener(new Transition.TransitionListener() {
@@ -196,9 +227,9 @@ public class MovieDetailsActivity extends BaseActivity {
             @Override
             public void onTransitionResume(Transition transition) {
             }
-        });
+        });*/
 
-        getWindow().setSharedElementEnterTransition(set);
+//        getWindow().setSharedElementEnterTransition(set);
 
         assert moviesEntity != null;
         mTxvMovieName.setText(moviesEntity.getTitle());
@@ -208,35 +239,48 @@ public class MovieDetailsActivity extends BaseActivity {
         String overView = "Desc : " + moviesEntity.getOverview();
         mTxvMovieDescription.setText(overView);
 
-        loadCastMember(moviesEntity.getMovieId());
         List<Integer> genreIds = moviesEntity.getGenreIds();
         loadGenre(genreIds);
+        loadVideos(moviesEntity.getMovieId());
     }
 
     private void loadMoviePosterImage(boolean retrieveFromCache) {
-        Glide.with(this)
-                .load(AppConstants.POSTER_BASE_PATH + moviesEntity.getPosterPath())
-                .apply(new RequestOptions()
-                        .placeholder(roundedBitmapDrawable)
-                        .error(roundedBitmapDrawable)
-                        .dontAnimate()
-                        .dontTransform()
-                        .onlyRetrieveFromCache(retrieveFromCache))
-                .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        supportStartPostponedEnterTransition();
-                        return false;
-                    }
+        if (moviesEntity.getBackdropPath() != null) {
+            Glide.with(this)
+                    .load(AppConstants.POSTER_BASE_PATH + moviesEntity.getPosterPath())
+                    .apply(new RequestOptions()
+                                    .placeholder(roundedBitmapDrawable)
+                                    .error(roundedBitmapDrawable)
+                                    .dontAnimate()
+                                    .dontTransform()
+                            /*.onlyRetrieveFromCache(retrieveFromCache)*/)
+                    .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                    /*.listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                        supportStartPostponedEnterTransition();
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        supportStartPostponedEnterTransition();
-                        return false;
-                    }
-                })
-                .into(mImvMoviePoster);
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                        supportStartPostponedEnterTransition();
+                            return false;
+                        }
+                    })*/
+                    .into(mImvMoviePoster);
+        } else {
+            Glide.with(this)
+                    .load(AppConstants.POSTER_BASE_PATH + moviesEntity.getPosterPath())
+                    .apply(new RequestOptions()
+                            .placeholder(roundedBitmapDrawable)
+                            .error(roundedBitmapDrawable)
+                            .dontAnimate()
+                            .dontTransform())
+                    .apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(25, 0)))
+                    .into(mImvMoviePoster);
+        }
+
     }
 
     private void loadCastMember(int movieId) {
@@ -253,6 +297,7 @@ public class MovieDetailsActivity extends BaseActivity {
                     AppUtils.setSnackBar(view, getResources().getString(R.string.txt_some_error_occurred));
                 }
             }
+            loadVideos(movieId);
         });
     }
 
@@ -274,10 +319,34 @@ public class MovieDetailsActivity extends BaseActivity {
         });
     }
 
+    private void loadVideos(int movieId) {
+        viewModel.getMovieVideosByMovieId(movieId).observe(this, apiResponse -> {
+            if (apiResponse != null) {
+                if (apiResponse.getResponse() != null) {
+                    if (!apiResponse.getResponse().getResults().isEmpty()) {
+                        movieVideoAdapter.addMovieVideo(apiResponse.getResponse().getResults());
+                        mLayMovieVideos.setVisibility(View.VISIBLE);
+                    } else {
+                        mLayMovieVideos.setVisibility(View.GONE);
+                    }
+                } else if (apiResponse.getT() != null) {
+                    AppUtils.setSnackBar(view, getResources().getString(R.string.txt_some_error_occurred));
+                }
+            }
+            loadCastMember(movieId);
+        });
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
-        supportFinishAfterTransition();
+        overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+//        supportFinishAfterTransition();
+    }
+
+    @Override
+    public void onVideoItemClickListener(String videoId) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoId));
+        startActivity(intent);
     }
 }

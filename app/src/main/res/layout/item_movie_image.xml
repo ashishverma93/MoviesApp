@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lay_movie_images"
+    android:layout_width="260dp"
+    android:layout_height="150dp"
+    android:foreground="?android:selectableItemBackground">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/imv_movie_images_backdrop"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/margin_4"
+        android:contentDescription="@string/txt_cast_member_image"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@color/colorPrimary_one" />
+
+</android.support.constraint.ConstraintLayout>

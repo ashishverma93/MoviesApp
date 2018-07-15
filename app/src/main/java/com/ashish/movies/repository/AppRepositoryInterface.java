@@ -7,6 +7,7 @@ import com.ashish.movies.db.entity.MoviesEntity;
 import com.ashish.movies.repository.api.ApiResponse;
 import com.ashish.movies.repository.model.GenreResponse;
 import com.ashish.movies.repository.model.MovieCastAndCrewMemberResponse;
+import com.ashish.movies.repository.model.MovieVideoResponse;
 import com.ashish.movies.repository.model.MoviesResponse;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface AppRepositoryInterface {
     LiveData<List<GenreEntity>> getGenreById(List<Integer> genreId);
 
     LiveData<ApiResponse<MovieCastAndCrewMemberResponse>> getMovieCastCreMemberByMovieId(int movieId);
+
+    LiveData<ApiResponse<MovieVideoResponse>> getMovieVideosByMovieId(int movieId);
 }

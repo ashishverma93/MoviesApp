@@ -10,8 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ashish.movies.R;
-import com.ashish.movies.repository.model.MovieCastMemberResponseValue;
+import com.ashish.movies.repository.model.MovieVideoResponseValue;
 import com.ashish.movies.utils.AppConstants;
+import com.ashish.movies.view.interfaces.MovieVideoClickListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -20,17 +21,23 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class MovieCastMemberAdapter extends RecyclerView.Adapter<MovieCastMemberAdapter.MyViewHolder> {
-
+public class MovieVideoAdapter extends RecyclerView.Adapter<MovieVideoAdapter.MyViewHolder> {
     private Context context;
-    private List<MovieCastMemberResponseValue> castList;
+    private List<MovieVideoResponseValue> castList;
+    private final MovieVideoClickListener movieVideoClickListener;
 
-    public MovieCastMemberAdapter(Context context) {
+    public MovieVideoAdapter(Context context) {
         this.context = context;
+        try {
+            this.movieVideoClickListener = ((MovieVideoClickListener) context);
+        } catch (Exception e) {
+            throw new ClassCastException("Activity must implement MovieListClickInterface");
+        }
     }
 
-    public void addMovieCastMember(List<MovieCastMemberResponseValue> castList) {
+    public void addMovieVideo(List<MovieVideoResponseValue> castList) {
         this.castList = castList;
         notifyDataSetChanged();
     }
@@ -38,7 +45,7 @@ public class MovieCastMemberAdapter extends RecyclerView.Adapter<MovieCastMember
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie_cast_member, parent, false));
+        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie_video, parent, false));
     }
 
     @Override
@@ -56,12 +63,11 @@ public class MovieCastMemberAdapter extends RecyclerView.Adapter<MovieCastMember
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.txv_member_cast_name)
-        TextView mTxvCastMemberName;
-        @BindView(R.id.txv_member_cast_role)
-        TextView mTxvCastMemberRole;
-        @BindView(R.id.imv_member_cast)
-        ImageView mImvCastMember;
+        @BindView(R.id.imv_movie_video)
+        ImageView mImvMovieVideo;
+
+        @BindView(R.id.txv_movie_video_name)
+        TextView mTxvVideName;
 
         MyViewHolder(View view) {
             super(view);
@@ -69,24 +75,26 @@ public class MovieCastMemberAdapter extends RecyclerView.Adapter<MovieCastMember
         }
 
         void onBind(int position) {
-            final MovieCastMemberResponseValue data = castList.get(position);
-            if (data.getProfilePath() != null) {
+            final MovieVideoResponseValue data = castList.get(position);
+            if (data.getKey() != null) {
                 Glide.with(context)
-                        .load(AppConstants.POSTER_BASE_PATH + data.getProfilePath())
+                        .load(String.format(AppConstants.YOUTUBE_THUMBNAIL, data.getKey()))
                         .apply(new RequestOptions()
                                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                                 .placeholder(R.color.colorAccent)
                                 .error(R.color.colorAccent))
-                        .into(mImvCastMember);
+                        .into(mImvMovieVideo);
             }
 
             if (data.getName() != null) {
-                mTxvCastMemberName.setText(data.getName());
+                mTxvVideName.setText(data.getName());
             }
+        }
 
-            if (data.getCharacter() != null) {
-                mTxvCastMemberRole.setText(data.getCharacter());
-            }
+        @OnClick
+        void onClick(View view) {
+            MovieVideoResponseValue movieVideoResponseValue = castList.get(getAdapterPosition());
+            movieVideoClickListener.onVideoItemClickListener(movieVideoResponseValue.getKey());
         }
     }
 }
