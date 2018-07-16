@@ -10,7 +10,6 @@ import android.widget.ImageView;
 
 import com.ashish.movies.R;
 import com.ashish.movies.repository.model.MovieImageBackdropResponseValue;
-import com.ashish.movies.repository.model.MovieImageResponse;
 import com.ashish.movies.utils.AppConstants;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
