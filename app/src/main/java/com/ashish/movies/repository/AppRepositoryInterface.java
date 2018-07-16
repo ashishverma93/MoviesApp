@@ -7,6 +7,7 @@ import com.ashish.movies.db.entity.MoviesEntity;
 import com.ashish.movies.repository.api.ApiResponse;
 import com.ashish.movies.repository.model.GenreResponse;
 import com.ashish.movies.repository.model.MovieCastAndCrewMemberResponse;
+import com.ashish.movies.repository.model.MovieImageResponse;
 import com.ashish.movies.repository.model.MovieVideoResponse;
 import com.ashish.movies.repository.model.MoviesResponse;
 
@@ -25,4 +26,6 @@ public interface AppRepositoryInterface {
     LiveData<ApiResponse<MovieCastAndCrewMemberResponse>> getMovieCastCreMemberByMovieId(int movieId);
 
     LiveData<ApiResponse<MovieVideoResponse>> getMovieVideosByMovieId(int movieId);
+
+    LiveData<ApiResponse<MovieImageResponse>> getMovieImagesByMovieId(int movieId);
 }

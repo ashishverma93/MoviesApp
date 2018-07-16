@@ -2,6 +2,7 @@ package com.ashish.movies.repository.api;
 
 import com.ashish.movies.repository.model.GenreResponse;
 import com.ashish.movies.repository.model.MovieCastAndCrewMemberResponse;
+import com.ashish.movies.repository.model.MovieImageResponse;
 import com.ashish.movies.repository.model.MovieVideoResponse;
 import com.ashish.movies.repository.model.MoviesResponse;
 
@@ -25,4 +26,7 @@ public interface ApiInterface {
 
     @GET("movie/{movieId}/videos")
     Call<MovieVideoResponse> getMovieVideoByMovieId(@Path(value = "movieId", encoded = true) int movieId, @Query("language") String language);
+
+    @GET("movie/{movieId}/images")
+    Call<MovieImageResponse> getMovieImagesByMovieId(@Path(value = "movieId", encoded = true) int movieId);
 }

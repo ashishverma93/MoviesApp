@@ -7,6 +7,7 @@ import com.ashish.movies.db.entity.GenreEntity;
 import com.ashish.movies.repository.AppRepository;
 import com.ashish.movies.repository.api.ApiResponse;
 import com.ashish.movies.repository.model.MovieCastAndCrewMemberResponse;
+import com.ashish.movies.repository.model.MovieImageResponse;
 import com.ashish.movies.repository.model.MovieVideoResponse;
 
 import java.util.List;
@@ -31,6 +32,10 @@ public class MovieDetailsViewModel extends ViewModel {
 
     LiveData<ApiResponse<MovieVideoResponse>> getMovieVideosByMovieId(int movieId) {
         return repository.getMovieVideosByMovieId(movieId);
+    }
+
+    LiveData<ApiResponse<MovieImageResponse>> getMovieImagesByMovieId(int movieId) {
+        return repository.getMovieImagesByMovieId(movieId);
     }
 
 }

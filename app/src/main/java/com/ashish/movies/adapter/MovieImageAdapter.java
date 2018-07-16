@@ -9,7 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.ashish.movies.R;
+import com.ashish.movies.repository.model.MovieImageBackdropResponseValue;
 import com.ashish.movies.repository.model.MovieImageResponse;
+import com.ashish.movies.utils.AppConstants;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
@@ -20,13 +25,13 @@ import butterknife.OnClick;
 public class MovieImageAdapter extends RecyclerView.Adapter<MovieImageAdapter.MyViewHolder> {
 
     private Context context;
-    private List<MovieImageResponse> castList;
+    private List<MovieImageBackdropResponseValue> castList;
 
     public MovieImageAdapter(Context context) {
         this.context = context;
     }
 
-    public void addMovieImages(List<MovieImageResponse> castList) {
+    public void addMovieImages(List<MovieImageBackdropResponseValue> castList) {
         this.castList = castList;
         notifyDataSetChanged();
     }
@@ -61,7 +66,16 @@ public class MovieImageAdapter extends RecyclerView.Adapter<MovieImageAdapter.My
         }
 
         void onBind(int position) {
-            final MovieImageResponse data = castList.get(position);
+            final MovieImageBackdropResponseValue data = castList.get(position);
+            if (data.getFilePath() != null) {
+                Glide.with(context)
+                        .load(AppConstants.BACKDROP_BASE_PATH + data.getFilePath())
+                        .apply(new RequestOptions()
+                                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                .placeholder(R.color.colorAccent)
+                                .error(R.color.colorAccent))
+                        .into(mImvMovieBackdropImage);
+            }
 
         }
 

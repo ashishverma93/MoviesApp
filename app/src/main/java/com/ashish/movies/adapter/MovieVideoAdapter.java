@@ -67,7 +67,7 @@ public class MovieVideoAdapter extends RecyclerView.Adapter<MovieVideoAdapter.My
         ImageView mImvMovieVideo;
 
         @BindView(R.id.txv_movie_video_name)
-        TextView mTxvVideName;
+        TextView mTxvVideoName;
 
         MyViewHolder(View view) {
             super(view);
@@ -87,7 +87,7 @@ public class MovieVideoAdapter extends RecyclerView.Adapter<MovieVideoAdapter.My
             }
 
             if (data.getName() != null) {
-                mTxvVideName.setText(data.getName());
+                mTxvVideoName.setText(data.getName());
             }
         }
 

@@ -11,6 +11,7 @@ import com.ashish.movies.repository.api.ApiInterface;
 import com.ashish.movies.repository.api.ApiResponse;
 import com.ashish.movies.repository.model.GenreResponse;
 import com.ashish.movies.repository.model.MovieCastAndCrewMemberResponse;
+import com.ashish.movies.repository.model.MovieImageResponse;
 import com.ashish.movies.repository.model.MovieVideoResponse;
 import com.ashish.movies.repository.model.MoviesResponse;
 import com.ashish.movies.utils.AppConstants;
@@ -131,6 +132,28 @@ public class AppRepository implements AppRepositoryInterface {
 
             @Override
             public void onFailure(Call<MovieVideoResponse> call, Throwable t) {
+                liveData.setValue(new ApiResponse<>(t));
+            }
+        });
+        return liveData;
+    }
+
+    @Override
+    public LiveData<ApiResponse<MovieImageResponse>> getMovieImagesByMovieId(int movieId) {
+        final MutableLiveData<ApiResponse<MovieImageResponse>> liveData = new MutableLiveData<>();
+        Call<MovieImageResponse> call = apiInterface.getMovieImagesByMovieId(movieId);
+        call.enqueue(new Callback<MovieImageResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MovieImageResponse> call, @NonNull Response<MovieImageResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body()));
+                } else {
+                    liveData.setValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieImageResponse> call, Throwable t) {
                 liveData.setValue(new ApiResponse<>(t));
             }
         });

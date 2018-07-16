@@ -123,6 +123,7 @@ public class MovieDetailsActivity extends BaseActivity implements MovieVideoClic
         castMemberAdapter = new MovieCastMemberAdapter(MovieDetailsActivity.this);
         movieGenreAdapter = new MovieGenreAdapter(MovieDetailsActivity.this);
         movieVideoAdapter = new MovieVideoAdapter(MovieDetailsActivity.this);
+        movieImageAdapter = new MovieImageAdapter(MovieDetailsActivity.this);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -150,6 +151,21 @@ public class MovieDetailsActivity extends BaseActivity implements MovieVideoClic
         mRvMovieVideos.setLayoutManager(llmVideos);
         mRvMovieVideos.setAdapter(movieVideoAdapter);
         mRvMovieVideos.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.left = dpToPx();
+                outRect.right = dpToPx() == state.getItemCount() - 1 ? dpToPx() : 0;
+                outRect.top = 0;
+                outRect.bottom = 0;
+            }
+        });
+
+        LinearLayoutManager llmImages = new LinearLayoutManager(this);
+        llmImages.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mRvMovieImages.setLayoutManager(llmImages);
+        mRvMovieImages.setAdapter(movieImageAdapter);
+        mRvMovieImages.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                 super.getItemOffsets(outRect, view, parent, state);
@@ -241,7 +257,7 @@ public class MovieDetailsActivity extends BaseActivity implements MovieVideoClic
 
         List<Integer> genreIds = moviesEntity.getGenreIds();
         loadGenre(genreIds);
-        loadVideos(moviesEntity.getMovieId());
+        loadCastMember(moviesEntity.getMovieId());
     }
 
     private void loadMoviePosterImage(boolean retrieveFromCache) {
@@ -333,9 +349,27 @@ public class MovieDetailsActivity extends BaseActivity implements MovieVideoClic
                     AppUtils.setSnackBar(view, getResources().getString(R.string.txt_some_error_occurred));
                 }
             }
-            loadCastMember(movieId);
+            loadImages(movieId);
         });
     }
+
+    private void loadImages(int movieId) {
+        viewModel.getMovieImagesByMovieId(movieId).observe(this, apiResponse -> {
+            if (apiResponse != null) {
+                if (apiResponse.getResponse() != null) {
+                    if (!apiResponse.getResponse().getBackdrops().isEmpty()) {
+                        movieImageAdapter.addMovieImages(apiResponse.getResponse().getBackdrops());
+                        mLayMovieImages.setVisibility(View.VISIBLE);
+                    } else {
+                        mLayMovieImages.setVisibility(View.GONE);
+                    }
+                } else if (apiResponse.getT() != null) {
+                    AppUtils.setSnackBar(view, getResources().getString(R.string.txt_some_error_occurred));
+                }
+            }
+        });
+    }
+
 
     @Override
     public void onBackPressed() {
